@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Content{% endblock %}
+
+{% block body %}
+    <h1>Content</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ content.id }}</td>
+            </tr>
+            <tr>
+                <th>Number</th>
+                <td>{{ content.number }}</td>
+            </tr>
+            <tr>
+                <th>Date</th>
+                <td>{{ content.date ? content.date|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Content</th>
+                <td>{{ content.content }}</td>
+            </tr>
+            <tr>
+                <th>Date_created</th>
+                <td>{{ content.dateCreated ? content.dateCreated|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Consecutive</th>
+                <td>{{ content.consecutive }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('content_index') }}">back to list</a>
+
+    <a href="{{ path('content_edit', {'id': content.id}) }}">edit</a>
+
+    {{ include('content/_delete_form.html.twig') }}
+{% endblock %}

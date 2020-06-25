@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Act index{% endblock %}
+
+{% block body %}
+<div class="app-page-title mb-1">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-graph text-success">
+                </i>
+            </div>
+            <div>Act List
+                <div class="page-title-subheading">Database of all the acts
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card mb-3">
+    <div class="card-header">
+        <i class="fas fa-table"></i>
+        Patients</div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Consecutive</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for act in acts %}
+            <tr>
+                <td>{{ act.id }}</td>
+                <td>{{ act.name }}</td>
+                <td>{{ act.consecutive }}</td>
+                <td>
+                    <a href="{{ path('act_show', {'id': act.id}) }}">show</a>
+                    <a href="{{ path('act_edit', {'id': act.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('act_new') }}">Create new</a>
+{% endblock %}

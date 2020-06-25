@@ -1,0 +1,267 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Content index{% endblock %}
+{% block stylesheet %}
+
+{% endblock %}
+
+{% block body %}
+<link rel="stylesheet href="{{ asset('js/jquery.dataTables.min.css') }}">
+
+<div class="app-page-title mb-1">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-graph text-success">
+                </i>
+            </div>
+            <div>Lista de Contenido
+                <div class="page-title-subheading">Base de datos de Contenido
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card mb-3">
+    <div class="card-header">
+        <i class="fas fa-table"></i>
+        Content</div>
+    <div class="card-body">
+        <div class="table-responsive">
+
+            <table id="example" class="table table-bordered" onload="reloadTable()" style="width:100%" cellspacing="0">
+                <thead>
+                <tr>
+                <th>Numero</th>
+                <th>Fecha Modificada</th>
+                <th>Contenido</th>
+                <th>Fecha Creada</th>
+                <th>Consecutivo</th>
+                <th>Acciones</th>
+
+            </tr>
+        </thead>
+
+     <tfoot>
+     <tr>
+
+         <th>Numero</th>
+         <th>Fecha Modificada</th>
+         <th><div class="text-primary" id="new_val" spellcheck="false" contenteditable="true" onkeypress="runNewScript(event,this,content)" onblur="ClickOut(this)" onclick="activate(this) ">Ingresa Nuevo Contenido Aqui</div></th>
+         <th>Fecha Creada</th>
+         <th>Consecutivo</th>
+         <th>Acciones</th>
+     </tr>
+
+     </tfoot>
+    </table>
+
+
+        </div>
+    </div>
+    <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+</div>
+
+
+    <a href="{{ path('content_new') }}">Create new</a>
+
+    <script src="{{ asset('js/jquery-3.3.1.js') }}"></script>
+    <script src="{{ asset('js/jquery.dataTables.min.js') }}"></script>
+
+    <script type="text/javascript">
+
+        function newValue(element,column){
+            var row_id = element.id;
+            var value = element.innerText;
+            value = value.replace(/(\n)/g,'');
+
+            $.ajax({
+                url:"{{ path('create_content') }}",
+                type: "POST",
+                data:{
+                    value:value,
+                    column:column,
+                    id:row_id
+                },
+                success:function (php_result) {
+                    console.log(php_result);
+                }
+
+            })
+        }
+
+        function runNewScript(e,element,column) {
+            //See notes about 'which' and 'key'
+            if (e.keyCode === 13) {
+                e.preventDefault();
+                var row_id = element.id;
+                console.log(row_id);
+                var value = element.innerText;
+                value = value.replace(/(\n)/g,'');
+
+                $.ajax({
+                    url:"{{ path('create_content') }}",
+                    type: "POST",
+                    data:{
+                        value:value,
+                        column:column,
+                        id:row_id
+                    },
+                    success:function (php_result) {
+                        console.log(php_result);
+                    }
+
+                });
+                $("#" + row_id).blur();
+                $('#example').DataTable().ajax.reload();
+                $('#example').DataTable().ajax.reload();
+                $('#example').DataTable().ajax.reload();
+
+            }
+        }
+
+        function reloadTable() {
+            $('#example').DataTable().ajax.reload();
+
+        }
+
+
+        // Get the input field
+        function runScript(e,element,column) {
+            //See notes about 'which' and 'key'
+            if (e.keyCode === 13) {
+                var row_id = element.id;
+                var value = element.innerText;
+                value = value.replace(/(\n)/g,'');
+
+                $.ajax({
+                    url:"{{ path('update_content') }}",
+                    type: "POST",
+                    data:{
+                        value:value,
+                        column:column,
+                        id:row_id
+                    },
+                    success:function (php_result) {
+                        console.log(php_result);
+                    }
+
+                })
+                $("#" + row_id).blur();
+                $('#example').DataTable().ajax.reload();
+                $('#example').DataTable().ajax.reload();
+                $('#example').DataTable().ajax.reload();
+            }
+        }
+
+
+        function checkValue(element,column,id){
+            var row_id = element.id;
+            alert( 'Clicked row id '+row_id );
+
+        }
+
+        function updateValue(element,column){
+         var row_id = element.id;
+         var value = element.innerText;
+
+            $.ajax({
+                url:"{{ path('update_content') }}",
+                type: "POST",
+                data:{
+                    value:value,
+                    column:column,
+                    id:row_id
+                },
+                success:function (php_result) {
+                    console.log(php_result);
+                }
+
+            })
+            $('#example').DataTable().ajax.reload();
+            $('#example').DataTable().ajax.reload();
+            $('#example').DataTable().ajax.reload();
+
+        }
+
+        function activate(element){
+
+            if (element.innerText === "Ingresa Nuevo Contenido Aqui"){
+                element.innerText = "";
+            }
+
+        // console.log(element)
+        }
+
+        function ClickOut(element){
+
+            if (element.innerText === ""){
+                element.innerText = "Ingresa Nuevo Contenido Aqui";
+            }
+
+            // console.log(element)
+        }
+
+
+        $(document).ready(function() {
+            $('#example').DataTable( {
+                "processing": true,
+                "serverSide": true,
+
+                "ajax": {
+                    "url":"{{ path('fetch_content')}}",
+                    "type": "POST"
+                },
+                "columns":[
+
+                    {"data":"number","name":"number"},
+                    {"data":"date.date","name":"date",
+                        render: function ( data, type, row ) {
+
+                            if(data != null){
+                                data = data.split(" ");
+                                return data[0];
+
+                            }else {
+                                return "";
+                            }
+                        }
+                    },
+                    {"data":"data","name":"data",
+
+                        render: function ( data, type, row,meta ) {
+                            content = 'data';
+                            return '<div id="'+row.id+'"contenteditable="true" spellcheck="false" onkeypress="runScript(event,this,content)" onblur="updateValue(this,content)" onclick="">  '+data+'</div>';
+                        }
+
+                    },
+                    {"data":"date_created.date","name":"date_created",
+                        render: function ( data, type, row ) {
+
+                            if(data != null){
+                                data = data.split(" ");
+                                return data[0];
+
+                            }else {
+                                return "";
+                            }
+                        }
+                    },
+                    {"data":"consecutive","name":"consecutive"},
+                    {
+                        "class":          "ac",
+                        "orderable":      false,
+                        "data":           "id",
+                        render: function ( data, type, row ) {
+                            ID = data;
+                            return '<div class="btn btn-primary btn-sm"><a class="text-white" href="'+ID+'">Delete</a></div>';
+                        }
+                    }
+                    ]
+
+            } );
+        } );
+
+
+    </script>
+{% endblock %}
